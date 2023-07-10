@@ -1,14 +1,17 @@
 <template>
   <main class="main">
     <section class="main__content">
-
+      <NearOrbitalObjectsList></NearOrbitalObjectsList>
     </section>
   </main>
 </template>
 
 <script>
+  import NearOrbitalObjectsList from '../components/NearOrbitalObjectsList.vue'
+
   export default {
     name: 'TheMain',
+    components: { NearOrbitalObjectsList },
   }
 </script>
 
