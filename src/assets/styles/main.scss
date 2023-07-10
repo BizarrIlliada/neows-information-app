@@ -1,4 +1,19 @@
+@import './variables.scss';
+
 * {
   box-sizing: border-box;
   font-family: Helvetica, Arial, sans-serif;
+  margin: 0;
+}
+
+.header {
+  height: $header-height;
+}
+
+.main {
+  min-height: $main-height;
+}
+
+.footer {
+  height: $footer-height;
 }
