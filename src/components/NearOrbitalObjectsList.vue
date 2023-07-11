@@ -29,7 +29,6 @@
 
     data() {
       return {
-        fetchedArray: [],
         theMostObjArr: [],
         isLoaderActive: true,
       }
@@ -40,16 +39,23 @@
     async created() {
       try {
         this.isLoaderActive = true;
-        this.fetchedArray = await loadOrbitalObjects()
+        const fetchedArray = await loadOrbitalObjects()
+        const mutatedFetchedArray = [...fetchedArray].sort((a, b) => a.date.localeCompare(b.date))
 
-        this.theMostObjArr.push(this.fetchedArray[0])
+        this.theMostObjArr.push(mutatedFetchedArray[0])
 
-        setInterval(() => {
-          for (let i = 1; i < this.fetchedArray.length; i++) {
-            this.theMostObjArr.push(this.fetchedArray[i])
+        let i = 1;
+
+        const intervalID = setInterval(() => {
+          this.theMostObjArr.unshift(mutatedFetchedArray[i])
+          i++;
+          
+          if (i === mutatedFetchedArray.length) {
+            clearInterval(intervalID)
           }
-        }, 5000);
-        this.theMostObjArr.sort((a, b) => b.date.localeCompare(a.date))
+        }, 2000);
+
+        console.log(fetchedArray);
         this.isLoaderActive = false;
       } catch (error) {
         throw new Error(error)
