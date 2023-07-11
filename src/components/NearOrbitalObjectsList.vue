@@ -29,6 +29,7 @@
 
     data() {
       return {
+        fetchedArray: [],
         theMostObjArr: [],
         isLoaderActive: true,
       }
@@ -36,10 +37,19 @@
 
     methods: {},
     
-    async beforeMount() {
+    async created() {
       try {
         this.isLoaderActive = true;
-        this.theMostObjArr = await loadOrbitalObjects()
+        this.fetchedArray = await loadOrbitalObjects()
+
+        this.theMostObjArr.push(this.fetchedArray[0])
+
+        setInterval(() => {
+          for (let i = 1; i < this.fetchedArray.length; i++) {
+            this.theMostObjArr.push(this.fetchedArray[i])
+          }
+        }, 5000);
+        this.theMostObjArr.sort((a, b) => b.date.localeCompare(a.date))
         this.isLoaderActive = false;
       } catch (error) {
         throw new Error(error)

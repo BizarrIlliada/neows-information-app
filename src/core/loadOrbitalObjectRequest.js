@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { makeTwoDigitNumber} from './helpers'
+import { makeTwoDigitNumber, getPartOfADateFromString } from './helpers'
 
 export default async function loadOrbitalObjects () {
   const payload = getLoadOrbitalDataPayload();
@@ -52,12 +52,12 @@ function getLoadOrbitalDataPayload() {
 
   const year = today.getFullYear();
   const month = makeTwoDigitNumber(today.getMonth());
-  const day = makeTwoDigitNumber(today.getDate());
-  const currentDay = makeTwoDigitNumber(today.getDate() - 7);
+  const thisDay = makeTwoDigitNumber(today.getDate());
+  const startDay = makeTwoDigitNumber(today.getDate() - 7);
 
   return  {
-    startDate: `${year}-${month}-${currentDay}`,
-    endDate: `${year}-${month}-${day}`,
+    startDate: `${year}-${month}-${startDay}`,
+    endDate: `${year}-${month}-${thisDay}`,
     apiKey: 'PXjG2k4gTiQT1uLnemaLCDAX3RDa7jRbL69WIROx',
   }
 }
@@ -88,13 +88,18 @@ function formateLoadOrbitalObjectsResponse(response) {
         hazardousAmount++;
       }
     })
+
+    const dateWithCurrentMonth = el.date.replace(
+      +getPartOfADateFromString(el.date, 'month'),
+      +getPartOfADateFromString(el.date, 'month') + 1
+    )
     
     resultArr.push({
       biggestObject,
       closestObject,
       fastestObject,
       hazardousAmount,
-      date: el.date,
+      date: dateWithCurrentMonth,
     })
 
     hazardousAmount = 0;
