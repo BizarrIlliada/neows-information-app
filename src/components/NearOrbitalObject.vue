@@ -34,6 +34,8 @@
 
 <style lang="scss">
   .box-card {
+    margin-bottom: 10px;
+
     &__list {
       display: flex;
       flex-direction: column;
