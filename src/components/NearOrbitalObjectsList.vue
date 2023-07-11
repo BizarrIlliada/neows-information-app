@@ -6,10 +6,13 @@
   <section v-if="biggestObject && closestObject && fastestObject">
     <!-- REMIND HOW TO USE ASYNC COMPONENTS AND CHANGE THAT V-IF -->
     <NearOrbitalObject
-      :biggest="biggestObject"
-      :closest="closestObject"
-      :fastest="fastestObject"
-      :hazardousAmount="hazardousCounter"
+      v-for="dailyInfo in theMostObjArr"
+      :key="dailyInfo.date"
+      :date="dailyInfo.date"
+      :biggest="dailyInfo.biggestObject"
+      :closest="dailyInfo.closestObject"
+      :fastest="dailyInfo.fastestObject"
+      :hazardousAmount="dailyInfo.hazardousAmount"
     />
   </section>
 </template>
@@ -32,8 +35,9 @@
         closestObject: null,
         fastestObject: null,
         hazardousCounter: 0,
-        currentDate: '',
         isLoaderActive: true,
+        currentDate: '',
+        theMostObjArr: [],
       }
     },
 
@@ -46,34 +50,46 @@
   
       try {
         await loadOrbitalObjects(payload, this.orbitalObjects)
-  
-        this.biggestObject = this.orbitalObjects[0];
-        this.closestObject = this.orbitalObjects[0];
-        this.fastestObject = this.orbitalObjects[0];
 
         this.orbitalObjects.forEach(el => {
-          if (+this.biggestObject.estimatedDiameterMax < +el.estimatedDiameterMax) {
-            this.biggestObject = el;
-          }
+          this.biggestObject = el.nearObjects[0]
+          this.closestObject = el.nearObjects[0];
+          this.fastestObject = el.nearObjects[0];
 
-          if (+this.closestObject.missDistance > +el.missDistance) {
-            this.closestObject = el;
-          }
+          el.nearObjects.forEach(currentEl => {
+            if (+this.biggestObject.estimatedDiameterMax < +currentEl.estimatedDiameterMax) {
+              this.biggestObject = currentEl;
+            }
+  
+            if (+this.closestObject.missDistance > +currentEl.missDistance) {
+              this.closestObject = currentEl;
+            }
+  
+            if (+this.fastestObject.relativeVelocity < +currentEl.relativeVelocity) {
+              this.fastestObject = currentEl;
+            }
+  
+            if (currentEl.isPotentiallyHazardousAsteroid) {
+              this.hazardousCounter++;
+            }
+          })
+          
+          this.theMostObjArr.push({
+            biggestObject: { ...this.biggestObject },
+            closestObject: { ...this.closestObject },
+            fastestObject: { ...this.fastestObject },
+            hazardousAmount: this.hazardousCounter,
+            date: el.date,
+          })
 
-          if (+this.fastestObject.relativeVelocity < +el.relativeVelocity) {
-            this.fastestObject = el;
-          }
-
-          if (el.isPotentiallyHazardousAsteroid) {
-            this.hazardousCounter++;
-          }
-
-          this.isLoaderActive = false;
+          this.hazardousCounter = 0;
         })
+        
+        this.isLoaderActive = false;
       } catch (error) {
         throw new Error(error)
       }
-    }
+    },
   }
 </script>
 

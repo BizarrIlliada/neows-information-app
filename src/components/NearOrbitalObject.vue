@@ -2,7 +2,7 @@
   <ElCard class="box-card">
     <template #header>
       <div class="card-header">
-        <span>The top list</span>
+        <span>The top list of {{ date }}</span>
       </div>
     </template>
     <ul class="box-card__list">
@@ -28,7 +28,7 @@
   export default {
     name: 'NearOrbitalObject',
     components: { ElCard },
-    props: ['biggest', 'closest', 'fastest', 'hazardousAmount'],
+    props: ['biggest', 'closest', 'fastest', 'hazardousAmount', 'date'],
   }
 </script>
 
