@@ -1,5 +1,8 @@
 <template>
-  <!-- ADD LOADER AND DIALOG WINDOW FOR ERRORS -->
+  <!-- ADD DIALOG WINDOW FOR ERRORS -->
+  <div v-show="isLoaderActive" class="loader">
+    <img class="loader__image" src="../assets/images/icone-chargement-grise.png" alt="loader">
+  </div>
   <section v-if="biggestObject && closestObject && fastestObject">
     <!-- REMIND HOW TO USE ASYNC COMPONENTS AND CHANGE THAT V-IF -->
     <NearOrbitalObject
@@ -30,6 +33,7 @@
         fastestObject: null,
         hazardousCounter: 0,
         currentDate: '',
+        isLoaderActive: true,
       }
     },
 
@@ -37,6 +41,8 @@
     
     async beforeMount() {
       const payload = getPayload()
+
+      this.isLoaderActive = true;
   
       try {
         await loadOrbitalObjects(payload, this.orbitalObjects)
@@ -61,6 +67,8 @@
           if (el.isPotentiallyHazardousAsteroid) {
             this.hazardousCounter++;
           }
+
+          this.isLoaderActive = false;
         })
       } catch (error) {
         throw new Error(error)
@@ -68,3 +76,22 @@
     }
   }
 </script>
+
+<styles lang="scss">
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .loader {
+    animation: spin 2s linear infinite;
+
+    &__image {
+      height: 200px;
+    }
+  }
+</styles>
