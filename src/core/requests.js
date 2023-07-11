@@ -1,18 +1,17 @@
 import axios from 'axios'
 
 export default async function loadOrbitalObjects (payload, resultArr) {
-  const { start_date, end_date, api_key } = payload;
+  const { startDate, endDate, apiKey } = payload;
 
-  const response = await axios.get(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${start_date}&end_date=${end_date}&api_key=` + api_key);
+  const response = await axios.get(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=` + apiKey);
 
-  const responseData = response.data.near_earth_objects['2023-06-05']
-
-  console.log(responseData);
+  const responseData = response.data.near_earth_objects[startDate]
 
   for (const key in responseData) {
     const newOrbitalObject = {
       id: responseData[key].id,
       isPotentiallyHazardousAsteroid: responseData[key].is_potentially_hazardous_asteroid,
+      name: responseData[key].name,
 
       estimatedDiameterMax: responseData[key]
         .estimated_diameter

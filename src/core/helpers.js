@@ -2,13 +2,21 @@ export default function getPayload() {
   const today = new Date();
 
   const year = today.getFullYear();
-  const month = today.getMonth() >= 10 ? today.getMonth() : '0' + today.getMonth();
-  const day = today.getDate();
-  const dayWhatWasWeekAgo = today.getDate() - 7;
+  const month = makeTwoDigitNumber(today.getMonth());
+  const day = makeTwoDigitNumber(today.getDate());
+  const currentDay = makeTwoDigitNumber(today.getDate() - 7);
 
   return  {
-    start_date: `${year}-${month}-${dayWhatWasWeekAgo}`,
-    end_date: `${year}-${month}-${day}`,
-    api_key: 'PXjG2k4gTiQT1uLnemaLCDAX3RDa7jRbL69WIROx',
+    startDate: `${year}-${month}-${currentDay}`,
+    endDate: `${year}-${month}-${day}`,
+    apiKey: 'PXjG2k4gTiQT1uLnemaLCDAX3RDa7jRbL69WIROx',
+  }
+}
+
+function makeTwoDigitNumber(num) {
+  if (num < 10) {
+    return '0' + num;
+  } else {
+    return num.toString();
   }
 }

@@ -1,9 +1,11 @@
 <template>
-  <section>
+  <!-- ADD LOADER AND DIALOG WINDOW FOR ERRORS -->
+  <section v-if="biggestObject && closestObject && fastestObject">
+    <!-- REMIND HOW TO USE ASYNC COMPONENTS AND CHANGE THAT V-IF -->
     <NearOrbitalObject
       :biggest="biggestObject"
       :closest="closestObject"
-      :faster="fasterObject"
+      :fastest="fastestObject"
       :hazardousAmount="hazardousCounter"
     />
   </section>
@@ -25,17 +27,15 @@
         orbitalObjects: [],
         biggestObject: null,
         closestObject: null,
-        fasterObject: null,
+        fastestObject: null,
         hazardousCounter: 0,
+        currentDate: '',
       }
     },
 
     methods: {},
-
-    async created() {
-    },
     
-    async mounted() {
+    async beforeMount() {
       const payload = getPayload()
   
       try {
@@ -43,7 +43,7 @@
   
         this.biggestObject = this.orbitalObjects[0];
         this.closestObject = this.orbitalObjects[0];
-        this.fasterObject = this.orbitalObjects[0];
+        this.fastestObject = this.orbitalObjects[0];
 
         this.orbitalObjects.forEach(el => {
           if (+this.biggestObject.estimatedDiameterMax < +el.estimatedDiameterMax) {
@@ -54,8 +54,12 @@
             this.closestObject = el;
           }
 
-          if (+this.fasterObject.relativeVelocity < +el.relativeVelocity) {
-            this.fasterObject = el;
+          if (+this.fastestObject.relativeVelocity < +el.relativeVelocity) {
+            this.fastestObject = el;
+          }
+
+          if (el.isPotentiallyHazardousAsteroid) {
+            this.hazardousCounter++;
           }
         })
       } catch (error) {
