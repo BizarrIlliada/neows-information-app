@@ -6,7 +6,7 @@
   <section v-if="theMostObjArr.length">
     <!--TASK REMIND HOW TO USE ASYNC COMPONENTS AND CHANGE THAT V-IF -->
     <NearOrbitalObject
-      v-for="dailyInfo in theMostObjArr" :key="dailyInfo.date"
+      v-for="dailyInfo in theMostObjArr.slice(0, 5)" :key="dailyInfo.date"
       :date="dailyInfo.date"
       :biggest="dailyInfo.biggestObject"
       :closest="dailyInfo.closestObject"
@@ -59,7 +59,6 @@
           if (this.hazardousHighestNumber < el.hazardousAmount) {
             this.hazardousHighestNumber = el.hazardousAmount;
             this.hazardousHigherNumberDate = el.date;
-            console.log('Highest: ', el.date);
           }
         });
 
@@ -68,7 +67,6 @@
           && el.date !== this.hazardousHigherNumberDate
           && el.hazardousAmount > 0) {
             this.hazardousSecondNumber = el.hazardousAmount;
-            console.log('Second: ', el.date);
           }
         });
       },
@@ -82,19 +80,20 @@
     watch: {
       theMostObjArr: {
         handler(value) {
+          this.hazardousHighestNumber = 0;
+          this.hazardousSecondNumber = 0;
+
           if (value.length === this.fetchedMutatedArray.length) {
             setTimeout(() => {
               const firstDay = value.pop()
               value.length = 0;
               value.push(firstDay);
-              this.hazardousHighestNumber = 0;
-              this.hazardousSecondNumber = 0;
 
               this.setIntervalMethod()
             }, this.delay);
           }
 
-          this.potentiallyHazardousObjects(value)
+          this.potentiallyHazardousObjects(value.slice(0, 5))
         },
         deep: true,
       },
