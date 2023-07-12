@@ -12,7 +12,7 @@
       :closest="dailyInfo.closestObject"
       :fastest="dailyInfo.fastestObject"
       :hazardousAmount="dailyInfo.hazardousAmount"
-      :isHazardous="hazardousHighestNumber === dailyInfo.hazardousAmount && dailyInfo.hazardousAmount > 0"
+      :isHazardous="isHazardous(dailyInfo)"
     />
   </section>
 </template>
@@ -29,11 +29,13 @@
 
     data() {
       return {
-        theMostObjArr: [],
         isLoaderActive: true,
         indexOfTimeoutRun: 0,
+        theMostObjArr: [],
         fetchedMutatedArray: [],
         hazardousHighestNumber: 0,
+        hazardousSecondNumber: 0,
+        hazardousHigherNumberDate: '',
         delay: 2000,
       }
     },
@@ -56,8 +58,24 @@
         array.forEach(el => {
           if (this.hazardousHighestNumber < el.hazardousAmount) {
             this.hazardousHighestNumber = el.hazardousAmount;
+            this.hazardousHigherNumberDate = el.date;
+            console.log('Highest: ', el.date);
           }
         });
+
+        array.forEach(el => {
+          if (this.hazardousSecondNumber <= el.hazardousAmount
+          && el.date !== this.hazardousHigherNumberDate
+          && el.hazardousAmount > 0) {
+            this.hazardousSecondNumber = el.hazardousAmount;
+            console.log('Second: ', el.date);
+          }
+        });
+      },
+
+      isHazardous(el) {
+        return (this.hazardousHighestNumber === el.hazardousAmount && el.hazardousAmount > 0)
+        || (this.hazardousSecondNumber === el.hazardousAmount && el.hazardousAmount > 0)
       }
     },
 
@@ -70,6 +88,7 @@
               value.length = 0;
               value.push(firstDay);
               this.hazardousHighestNumber = 0;
+              this.hazardousSecondNumber = 0;
 
               this.setIntervalMethod()
             }, this.delay);
