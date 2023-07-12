@@ -36,7 +36,7 @@
         hazardousHighestNumber: 0,
         hazardousSecondNumber: 0,
         hazardousHigherNumberDate: '',
-        delay: 2000,
+        delay: 5000,
       }
     },
 
