@@ -18,6 +18,7 @@
 <style lang="scss">
   .main {
     background-color: #fff9e7;
+    padding-top: 10px;
 
     &__content {
       max-width: 1260px;

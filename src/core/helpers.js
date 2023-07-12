@@ -20,3 +20,5 @@ export function getPartOfADateFromString(string, part) {
       break;
   }
 }
+
+export function deepCopy() {}

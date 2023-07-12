@@ -1,18 +1,18 @@
 <template>
   <!--TASK ADD DIALOG WINDOW FOR ERRORS -->
-  <div v-show="isLoaderActive" class="loader">
+  <div v-if="isLoaderActive" class="loader">
     <img class="loader__image" src="../assets/images/icone-chargement-grise.png" alt="loader">
   </div>
   <section v-if="theMostObjArr.length">
     <!--TASK REMIND HOW TO USE ASYNC COMPONENTS AND CHANGE THAT V-IF -->
     <NearOrbitalObject
-      v-for="dailyInfo in theMostObjArr"
-      :key="dailyInfo.date"
+      v-for="dailyInfo in theMostObjArr" :key="dailyInfo.date"
       :date="dailyInfo.date"
       :biggest="dailyInfo.biggestObject"
       :closest="dailyInfo.closestObject"
       :fastest="dailyInfo.fastestObject"
       :hazardousAmount="dailyInfo.hazardousAmount"
+      :isHazardous="hazardousHighestNumber === dailyInfo.hazardousAmount && dailyInfo.hazardousAmount > 0"
     />
   </section>
 </template>
@@ -33,6 +33,7 @@
         isLoaderActive: true,
         indexOfTimeoutRun: 0,
         fetchedMutatedArray: [],
+        hazardousHighestNumber: 0,
         delay: 2000,
       }
     },
@@ -49,6 +50,14 @@
             clearInterval(intervalID)
           }
         }, this.delay);
+      },
+
+      potentiallyHazardousObjects(array) {
+        array.forEach(el => {
+          if (this.hazardousHighestNumber < el.hazardousAmount) {
+            this.hazardousHighestNumber = el.hazardousAmount;
+          }
+        });
       }
     },
 
@@ -59,10 +68,14 @@
             setTimeout(() => {
               const firstDay = value.pop()
               value.length = 0;
-              value.push(firstDay)
+              value.push(firstDay);
+              this.hazardousHighestNumber = 0;
+
               this.setIntervalMethod()
             }, this.delay);
           }
+
+          this.potentiallyHazardousObjects(value)
         },
         deep: true,
       },
@@ -79,7 +92,6 @@
 
         this.setIntervalMethod()
 
-        console.log(fetchedArray);
         this.isLoaderActive = false;
       } catch (error) {
         throw new Error(error)

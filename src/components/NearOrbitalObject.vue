@@ -1,5 +1,5 @@
 <template>
-  <ElCard class="box-card">
+  <ElCard :class="['box-card', { 'box-card--red': isHazardous }]">
     <template #header>
       <div class="card-header">
         <span>The top list of {{ date }}</span>
@@ -28,14 +28,17 @@
   export default {
     name: 'NearOrbitalObject',
     components: { ElCard },
-    props: ['biggest', 'closest', 'fastest', 'hazardousAmount', 'date'],
+    props: ['biggest', 'closest', 'fastest', 'hazardousAmount', 'date', 'isHazardous'],
   }
 </script>
 
 <style lang="scss">
   .box-card {
     margin-bottom: 10px;
-
+    &--red {
+      background-color: #f9c1c1 !important;
+    }
+    
     &__list {
       display: flex;
       flex-direction: column;
