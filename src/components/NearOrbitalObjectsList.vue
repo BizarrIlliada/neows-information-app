@@ -1,10 +1,10 @@
 <template>
-  <!-- ADD DIALOG WINDOW FOR ERRORS -->
+  <!--TASK ADD DIALOG WINDOW FOR ERRORS -->
   <div v-show="isLoaderActive" class="loader">
     <img class="loader__image" src="../assets/images/icone-chargement-grise.png" alt="loader">
   </div>
   <section v-if="theMostObjArr.length">
-    <!-- REMIND HOW TO USE ASYNC COMPONENTS AND CHANGE THAT V-IF -->
+    <!--TASK REMIND HOW TO USE ASYNC COMPONENTS AND CHANGE THAT V-IF -->
     <NearOrbitalObject
       v-for="dailyInfo in theMostObjArr"
       :key="dailyInfo.date"
@@ -31,29 +31,53 @@
       return {
         theMostObjArr: [],
         isLoaderActive: true,
+        indexOfTimeoutRun: 0,
+        fetchedMutatedArray: [],
+        delay: 2000,
       }
     },
 
-    methods: {},
+    methods: {
+      setIntervalMethod() {
+        this.indexOfTimeoutRun = 1;
+
+        const intervalID = setInterval(() => {
+          this.theMostObjArr.unshift(this.fetchedMutatedArray[this.indexOfTimeoutRun])
+          this.indexOfTimeoutRun++;
+          
+          if (this.indexOfTimeoutRun === this.fetchedMutatedArray.length) {
+            clearInterval(intervalID)
+          }
+        }, this.delay);
+      }
+    },
+
+    watch: {
+      theMostObjArr: {
+        handler(value) {
+          if (value.length === this.fetchedMutatedArray.length) {
+            setTimeout(() => {
+              const firstDay = value.pop()
+              value.length = 0;
+              value.push(firstDay)
+              this.setIntervalMethod()
+            }, this.delay);
+          }
+        },
+        deep: true,
+      },
+    },
     
     async created() {
       try {
         this.isLoaderActive = true;
+        //TASK ADD DEEP COPY FUNCTION FOR RESPONSE ARRAY WITH OBJECTS INSIDE
         const fetchedArray = await loadOrbitalObjects()
-        const mutatedFetchedArray = [...fetchedArray].sort((a, b) => a.date.localeCompare(b.date))
+        this.fetchedMutatedArray = [...fetchedArray].sort((a, b) => a.date.localeCompare(b.date))
 
-        this.theMostObjArr.push(mutatedFetchedArray[0])
+        this.theMostObjArr.push(this.fetchedMutatedArray[0])
 
-        let i = 1;
-
-        const intervalID = setInterval(() => {
-          this.theMostObjArr.unshift(mutatedFetchedArray[i])
-          i++;
-          
-          if (i === mutatedFetchedArray.length) {
-            clearInterval(intervalID)
-          }
-        }, 2000);
+        this.setIntervalMethod()
 
         console.log(fetchedArray);
         this.isLoaderActive = false;
