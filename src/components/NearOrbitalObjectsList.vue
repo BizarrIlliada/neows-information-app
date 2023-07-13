@@ -2,7 +2,7 @@
   <!--TASK ADD DIALOG WINDOW FOR ERRORS -->
   <div v-if="isLoaderActive" class="loader">
     <h2 class="loader__title">
-      Loading data... Please, wait.
+      {{ aLittleMoreTimeMessage ? 'Just a little more time!' : 'Loading data... Please, wait.'}}
     </h2>
     <div class="loader__image-container">
       <img class="loader__image" src="../assets/images/icone-chargement-grise.png" alt="loader">
@@ -34,6 +34,7 @@
 
     data() {
       return {
+        aLittleMoreTimeMessage: false,
         isLoaderActive: true,
         indexOfTimeoutRun: 0,
         theMostObjArr: [],
@@ -41,7 +42,7 @@
         hazardousHighestNumber: 0,
         hazardousSecondNumber: 0,
         hazardousHigherNumberDate: '',
-        delay: 2000,
+        delay: 5000,
       }
     },
 
@@ -110,12 +111,14 @@
     async created() {
       try {
         this.isLoaderActive = true;
+        setTimeout(() => {
+          this.aLittleMoreTimeMessage = true;
+        }, 3000);
+        
         //TASK ADD DEEP COPY FUNCTION FOR RESPONSE ARRAY WITH OBJECTS INSIDE
         const fetchedArray = await loadOrbitalObjects()
         this.fetchedMutatedArray = [...fetchedArray].sort((a, b) => a.date.localeCompare(b.date))
-
         this.theMostObjArr.push(this.fetchedMutatedArray[0])
-
         this.setIntervalMethod()
 
         this.isLoaderActive = false;
