@@ -2,6 +2,7 @@
 [DEMO Link](https://bizarrilliada.github.io/neows-information-app/)
 
 ## NASA API allows request only 1 week period, its the reason why i didn't show items from first day of month
+UPD: I just realized that I had to send separates requests, but I chose the way where I have to get data 1 time and work with it
 
 ### Project setup
 ```
