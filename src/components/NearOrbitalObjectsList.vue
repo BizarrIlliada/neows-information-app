@@ -1,7 +1,12 @@
 <template>
   <!--TASK ADD DIALOG WINDOW FOR ERRORS -->
   <div v-if="isLoaderActive" class="loader">
-    <img class="loader__image" src="../assets/images/icone-chargement-grise.png" alt="loader">
+    <h2 class="loader__title">
+      Loading data... Please, wait.
+    </h2>
+    <div class="loader__image-container">
+      <img class="loader__image" src="../assets/images/icone-chargement-grise.png" alt="loader">
+    </div>
   </div>
   <section v-if="theMostObjArr.length">
     <!--TASK REMIND HOW TO USE ASYNC COMPONENTS AND CHANGE THAT V-IF -->
@@ -132,9 +137,12 @@
   }
   
   .loader {
-    animation: spin 2s linear infinite;
-
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  
     &__image {
+      animation: spin 2s linear infinite;
       height: 200px;
     }
   }
