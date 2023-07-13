@@ -2,58 +2,67 @@ import axios from 'axios'
 import { makeTwoDigitNumber, getPartOfADateFromString } from './helpers'
 
 export default async function loadOrbitalObjects () {
-  const payload = getLoadOrbitalDataPayload();
-  const { startDate, endDate, apiKey } = payload;
+  let day = 1;
+  const today = new Date();
   const resultArr = [];
 
-  const response = await axios.get(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=` + apiKey);
-
-  const responseData = response.data.near_earth_objects
-
-  const daysArray = [];
-
-  for (const currentDay in responseData) {
-    for (const key in responseData[currentDay]) {
-      const day = responseData[currentDay]
-
-      const newOrbitalObject = {
-        id: day[key].id,
-        isPotentiallyHazardousAsteroid: day[key].is_potentially_hazardous_asteroid,
-        name: day[key].name,
+  do {
+    const payload = getLoadOrbitalDataPayload(day);
+    const { startDate, endDate, apiKey } = payload;
   
-        estimatedDiameterMax: day[key]
-          .estimated_diameter
-          .kilometers
-          .estimated_diameter_max,
+    const response = await axios.get(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=` + apiKey);
   
-        missDistance: day[key]
-          .close_approach_data[0]
-          .miss_distance
-          .kilometers,
+    const responseData = response.data.near_earth_objects
   
-        relativeVelocity: day[key]
-          .close_approach_data[0]
-          .relative_velocity
-          .kilometers_per_hour,
+    const daysArray = [];
+  
+    for (const currentDay in responseData) {
+      for (const key in responseData[currentDay]) {
+        const day = responseData[currentDay]
+  
+        const newOrbitalObject = {
+          id: day[key].id,
+          isPotentiallyHazardousAsteroid: day[key].is_potentially_hazardous_asteroid,
+          name: day[key].name,
+    
+          estimatedDiameterMax: day[key]
+            .estimated_diameter
+            .kilometers
+            .estimated_diameter_max,
+    
+          missDistance: day[key]
+            .close_approach_data[0]
+            .miss_distance
+            .kilometers,
+    
+          relativeVelocity: day[key]
+            .close_approach_data[0]
+            .relative_velocity
+            .kilometers_per_hour,
+        }
+    
+        daysArray.push({ ...newOrbitalObject })
       }
   
-      daysArray.push({ ...newOrbitalObject })
+      resultArr.push({ date: currentDay, nearObjects: [...daysArray] })
+      daysArray.length = 0;
     }
 
-    resultArr.push({ date: currentDay, nearObjects: [...daysArray] })
-    daysArray.length = 0;
-  }
+    day++;
+  } while (
+    day <= +today.getDate()
+  );
 
   return formateLoadOrbitalObjectsResponse(resultArr);
 }
 
-function getLoadOrbitalDataPayload() {
+function getLoadOrbitalDataPayload(day = 1) {
   const today = new Date();
 
   const year = today.getFullYear();
   const month = makeTwoDigitNumber(today.getMonth());
-  const thisDay = makeTwoDigitNumber(today.getDate());
-  const startDay = makeTwoDigitNumber(today.getDate() - 7);
+  const thisDay = makeTwoDigitNumber(day);
+  const startDay = makeTwoDigitNumber(day);
 
   return  {
     startDate: `${year}-${month}-${startDay}`,
@@ -93,7 +102,7 @@ function formateLoadOrbitalObjectsResponse(response) {
       +getPartOfADateFromString(el.date, 'month'),
       +getPartOfADateFromString(el.date, 'month') + 1
     )
-    
+      
     resultArr.push({
       biggestObject,
       closestObject,

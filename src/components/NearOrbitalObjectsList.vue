@@ -36,7 +36,7 @@
         hazardousHighestNumber: 0,
         hazardousSecondNumber: 0,
         hazardousHigherNumberDate: '',
-        delay: 5000,
+        delay: 2000,
       }
     },
 
@@ -44,14 +44,17 @@
       setIntervalMethod() {
         this.indexOfTimeoutRun = 1;
 
-        const intervalID = setInterval(() => {
-          this.theMostObjArr.unshift(this.fetchedMutatedArray[this.indexOfTimeoutRun])
-          this.indexOfTimeoutRun++;
-          
-          if (this.indexOfTimeoutRun === this.fetchedMutatedArray.length) {
-            clearInterval(intervalID)
-          }
-        }, this.delay);
+        if (this.fetchedMutatedArray.length > 1) {
+          const intervalID = setInterval(() => {
+            this.theMostObjArr.unshift(this.fetchedMutatedArray[this.indexOfTimeoutRun])
+            this.indexOfTimeoutRun++;
+            
+            if (this.indexOfTimeoutRun === this.fetchedMutatedArray.length) {
+              clearInterval(intervalID)
+            }
+          }, this.delay);
+        }
+
       },
 
       potentiallyHazardousObjects(array) {
