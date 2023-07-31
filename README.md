@@ -1,6 +1,8 @@
 # neows-information-app
 [DEMO Link](https://bizarrilliada.github.io/neows-information-app/)
 
+## The app shows info starting from the first day of the month. So if you see only 1-5 days it's 100% beginning of the month.
+
 ### Project setup
 ```
 npm install
